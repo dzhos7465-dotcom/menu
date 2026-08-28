@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0d1f18">
 <title>BURGER ZONA — Меню</title>
 <style>
@@ -10,118 +10,99 @@
     --bg:#0d1f18;
     --gold:#f2c879;
     --gold-soft:rgba(242,200,121,.55);
+    --ar:0.7071; /* width / height of each page */
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  html,body{height:100%;overflow:hidden;background:var(--bg);font-family:"Trebuchet MS",-apple-system,system-ui,sans-serif;}
-  body{
-    display:flex;flex-direction:column;
-    background:radial-gradient(circle at 50% 30%,#153025 0%,#0d1f18 70%);
-  }
+  html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
+    font-family:"Trebuchet MS",-apple-system,system-ui,sans-serif;
+    position:fixed;inset:0;}
+  body{display:flex;flex-direction:column;
+    background:radial-gradient(circle at 50% 25%,#163326 0%,#0d1f18 72%);}
 
-  /* ---- stage ---- */
-  .stage{
-    flex:1;position:relative;overflow:hidden;
-    display:flex;align-items:center;justify-content:center;
-    perspective:2000px;
-  }
-  .pages{
-    position:relative;width:100%;height:100%;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .page{
-    position:absolute;top:50%;left:50%;
-    max-width:96%;max-height:96%;
+  /* ---------- stage ---------- */
+  .stage{flex:1;position:relative;overflow:hidden;}
+
+  /* the book: sized by JS to fit the screen exactly */
+  .book{
+    position:absolute;left:50%;top:50%;
     transform:translate(-50%,-50%);
-    border-radius:10px;
-    box-shadow:0 18px 50px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.4);
-    opacity:0;pointer-events:none;
-    transition:transform .55s cubic-bezier(.4,.05,.2,1), opacity .35s ease;
+    perspective:2200px;
+  }
+  .sheet{
+    position:absolute;inset:0;
+    transform-style:preserve-3d;
     transform-origin:left center;
-    will-change:transform,opacity;
+    transition:transform .78s cubic-bezier(.62,.02,.24,1);
+    will-change:transform;
+  }
+  .sheet .face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border-radius:8px;overflow:hidden;
+    box-shadow:0 22px 55px rgba(0,0,0,.55),0 3px 10px rgba(0,0,0,.4);
     background:var(--bg);
   }
-  .page img{
-    display:block;max-width:100%;max-height:100%;
-    width:auto;height:auto;border-radius:10px;
-    -webkit-user-drag:none;user-select:none;
-  }
-  /* states */
-  .page.current{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) rotateY(0deg);z-index:3;}
-  .page.prev{opacity:0;transform:translate(-50%,-50%) rotateY(115deg);z-index:2;}
-  .page.next{opacity:0;transform:translate(-50%,-50%) rotateY(-115deg) scale(.96);z-index:1;}
+  .sheet .face img{width:100%;height:100%;display:block;object-fit:cover;
+    -webkit-user-drag:none;user-select:none;}
+  .sheet .front{transform:rotateY(0deg);}
+  .sheet .back{transform:rotateY(180deg);}
+  /* shadow overlay that darkens the turning page for depth */
+  .sheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,0) 55%);
+    opacity:0;transition:opacity .78s ease;pointer-events:none;border-radius:8px;}
+  .sheet.turning .shade{opacity:1;}
+  .sheet.flipped{transform:rotateY(-180deg);}
 
-  /* ---- arrows (tablet / desktop) ---- */
-  .nav{
-    position:absolute;top:0;bottom:0;width:22%;max-width:150px;
-    display:flex;align-items:center;justify-content:center;
-    z-index:10;cursor:pointer;border:none;background:transparent;
-    opacity:0;transition:opacity .25s;
-  }
+  /* ---------- arrows ---------- */
+  .nav{position:absolute;top:0;bottom:0;width:16%;max-width:130px;z-index:20;
+    display:flex;align-items:center;border:none;background:transparent;cursor:pointer;
+    opacity:0;transition:opacity .25s;}
   .stage:hover .nav{opacity:1;}
-  .nav.left{left:0;justify-content:flex-start;padding-left:14px;}
-  .nav.right{right:0;justify-content:flex-end;padding-right:14px;}
-  .nav .chev{
-    width:52px;height:52px;border-radius:50%;
+  .nav.left{left:0;justify-content:flex-start;padding-left:16px;}
+  .nav.right{right:0;justify-content:flex-end;padding-right:16px;}
+  .nav .chev{width:54px;height:54px;border-radius:50%;
     background:rgba(13,31,24,.55);backdrop-filter:blur(6px);
-    border:1px solid var(--gold-soft);
-    display:flex;align-items:center;justify-content:center;
-    transition:transform .2s,background .2s;
-  }
-  .nav:hover .chev{background:rgba(13,31,24,.8);transform:scale(1.08);}
-  .nav .chev svg{width:24px;height:24px;stroke:var(--gold);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+    border:1px solid var(--gold-soft);display:flex;align-items:center;justify-content:center;
+    transition:transform .2s,background .2s;}
+  .nav:hover .chev{background:rgba(13,31,24,.85);transform:scale(1.08);}
+  .nav .chev svg{width:24px;height:24px;stroke:var(--gold);fill:none;stroke-width:2.4;
+    stroke-linecap:round;stroke-linejoin:round;}
   .nav[disabled]{opacity:0!important;pointer-events:none;}
 
-  /* ---- footer / dots ---- */
-  .bar{
-    flex:0 0 auto;padding:14px 16px calc(14px + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;align-items:center;gap:9px;
-  }
+  /* ---------- footer ---------- */
+  .bar{flex:0 0 auto;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;align-items:center;gap:8px;}
   .dots{display:flex;gap:10px;}
-  .dot{
-    width:9px;height:9px;border-radius:50%;
-    background:var(--gold-soft);opacity:.45;
-    transition:opacity .3s,transform .3s,background .3s;cursor:pointer;
-  }
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--gold-soft);opacity:.45;
+    transition:opacity .3s,transform .3s,background .3s;cursor:pointer;}
   .dot.on{opacity:1;background:var(--gold);transform:scale(1.25);}
-  .counter{
-    font-size:12px;letter-spacing:.18em;color:var(--gold);
-    opacity:.75;font-weight:bold;
-  }
+  .counter{font-size:12px;letter-spacing:.18em;color:var(--gold);opacity:.75;font-weight:bold;}
 
-  /* swipe hint */
-  .hint{
-    position:absolute;left:50%;bottom:22px;transform:translateX(-50%);
-    z-index:20;color:var(--gold);font-size:13px;letter-spacing:.14em;
+  /* ---------- swipe hint ---------- */
+  .hint{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:30;
+    color:var(--gold);font-size:13px;letter-spacing:.14em;
     background:rgba(13,31,24,.6);backdrop-filter:blur(6px);
     padding:9px 18px;border-radius:30px;border:1px solid var(--gold-soft);
-    display:flex;align-items:center;gap:9px;
-    animation:hintPulse 1.8s ease-in-out infinite;
-    transition:opacity .5s;
-  }
-  .hint svg{width:20px;height:20px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    display:flex;align-items:center;gap:9px;animation:hintPulse 1.7s ease-in-out infinite;
+    transition:opacity .5s;}
+  .hint svg{width:20px;height:20px;fill:none;stroke:var(--gold);stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round;}
   @keyframes hintPulse{0%,100%{transform:translateX(-50%) translateX(-6px);}50%{transform:translateX(-50%) translateX(6px);}}
   .hint.hide{opacity:0;pointer-events:none;}
 
   @media (prefers-reduced-motion:reduce){
-    .page{transition:opacity .25s ease;}
-    .page.prev,.page.next{transform:translate(-50%,-50%);}
+    .sheet{transition:transform .3s ease;}
     .hint{animation:none;}
   }
 </style>
 </head>
 <body>
-
   <div class="stage" id="stage">
-    <div class="pages" id="pages">
-      <div class="page current"><img src="1.jpg" alt="Меню — бургеры, хот-доги, курица" draggable="false"></div>
-      <div class="page next"><img src="2.jpg" alt="Меню — пицца, салаты, шаурма" draggable="false"></div>
-      <div class="page next"><img src="3.jpg" alt="Меню — роллы, креветки, контакты" draggable="false"></div>
-    </div>
+    <div class="book" id="book"></div>
 
-    <button class="nav left" id="prev" aria-label="Предыдущая страница" disabled>
+    <button class="nav left" id="prev" aria-label="Назад" disabled>
       <span class="chev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
     </button>
-    <button class="nav right" id="next" aria-label="Следующая страница">
+    <button class="nav right" id="next" aria-label="Вперёд">
       <span class="chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
     </button>
 
@@ -139,50 +120,108 @@
 
 <script>
 (function(){
-  const pages=[...document.querySelectorAll('.page')];
-  const total=pages.length;
-  let i=0;
+  const IMAGES=['1.jpg','2.jpg','3.jpg'];
+  const AR=0.7071;                 // page width / height
+  const total=IMAGES.length;
+  let i=0, animating=false;
+
+  const stage=document.getElementById('stage');
+  const book=document.getElementById('book');
   const prevBtn=document.getElementById('prev');
   const nextBtn=document.getElementById('next');
   const dotsWrap=document.getElementById('dots');
   const counter=document.getElementById('counter');
   const hint=document.getElementById('hint');
 
-  // dots
-  pages.forEach((_,idx)=>{
+  /* Build one sheet per page. Front = current image, back = next image,
+     so the flip reveals the next page on the back of the turning sheet. */
+  const sheets=[];
+  for(let idx=0;idx<total;idx++){
+    const s=document.createElement('div');
+    s.className='sheet';
+    s.style.zIndex=total-idx;
+    const frontSrc=IMAGES[idx];
+    const backSrc=IMAGES[idx+1]||IMAGES[idx];
+    s.innerHTML=
+      '<div class="face front"><img src="'+frontSrc+'" alt="Меню, страница '+(idx+1)+'"></div>'+
+      '<div class="face back"><img src="'+backSrc+'" alt=""></div>'+
+      '<div class="shade"></div>';
+    book.appendChild(s);
+    sheets.push(s);
+  }
+
+  /* dots */
+  for(let idx=0;idx<total;idx++){
     const d=document.createElement('div');
     d.className='dot'+(idx===0?' on':'');
-    d.addEventListener('click',()=>go(idx));
+    d.addEventListener('click',()=>jump(idx));
     dotsWrap.appendChild(d);
-  });
+  }
   const dots=[...dotsWrap.children];
 
-  function render(){
-    pages.forEach((p,idx)=>{
-      p.className='page '+(idx===i?'current':(idx<i?'prev':'next'));
-    });
+  /* ---- size the book to fit the screen exactly ---- */
+  function fit(){
+    const availW=stage.clientWidth*0.94;
+    const availH=stage.clientHeight*0.94;
+    let w=availH*AR, h=availH;      // try fitting by height first
+    if(w>availW){ w=availW; h=availW/AR; }  // too wide -> fit by width
+    book.style.width=w+'px';
+    book.style.height=h+'px';
+  }
+  window.addEventListener('resize',fit);
+  window.addEventListener('orientationchange',()=>setTimeout(fit,200));
+
+  function updateChrome(){
     dots.forEach((d,idx)=>d.classList.toggle('on',idx===i));
     counter.textContent=(i+1)+' / '+total;
     prevBtn.disabled=(i===0);
     nextBtn.disabled=(i===total-1);
   }
-  function go(n){
-    n=Math.max(0,Math.min(total-1,n));
-    if(n===i)return;
-    i=n;render();hideHint();
+
+  function next(){
+    if(animating||i>=total-1)return;
+    animating=true;hideHint();
+    const s=sheets[i];
+    s.classList.add('turning');
+    // lift turning sheet above the rest during the flip
+    s.style.zIndex=total+2;
+    requestAnimationFrame(()=>s.classList.add('flipped'));
+    setTimeout(()=>{ i++; updateChrome(); animating=false; },780);
   }
+  function prev(){
+    if(animating||i<=0)return;
+    animating=true;hideHint();
+    const s=sheets[i-1];
+    s.style.zIndex=total+2;
+    s.classList.remove('flipped');
+    setTimeout(()=>{
+      s.classList.remove('turning');
+      s.style.zIndex=total-(i-1);
+      i--; updateChrome(); animating=false;
+    },780);
+  }
+  function jump(target){
+    if(animating||target===i)return;
+    // set all sheets to the correct flipped state instantly-ish (step through)
+    const step=()=>{
+      if(i<target){ next(); }
+      else if(i>target){ prev(); }
+      if(i!==target) setTimeout(step,120);
+    };
+    step();
+  }
+
   function hideHint(){hint.classList.add('hide');}
 
-  prevBtn.addEventListener('click',()=>go(i-1));
-  nextBtn.addEventListener('click',()=>go(i+1));
+  prevBtn.addEventListener('click',prev);
+  nextBtn.addEventListener('click',next);
   document.addEventListener('keydown',e=>{
-    if(e.key==='ArrowRight')go(i+1);
-    if(e.key==='ArrowLeft')go(i-1);
+    if(e.key==='ArrowRight')next();
+    if(e.key==='ArrowLeft')prev();
   });
 
-  // swipe
+  /* swipe */
   let x0=null,y0=null,t0=0;
-  const stage=document.getElementById('stage');
   stage.addEventListener('touchstart',e=>{
     x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();
   },{passive:true});
@@ -191,15 +230,15 @@
     const dx=e.changedTouches[0].clientX-x0;
     const dy=e.changedTouches[0].clientY-y0;
     const dt=Date.now()-t0;
-    if(Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy) && dt<600){
-      if(dx<0)go(i+1);else go(i-1);
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)&&dt<700){
+      if(dx<0)next();else prev();
     }
     x0=y0=null;
   },{passive:true});
 
-  // auto-hide hint after a moment
+  fit();
+  updateChrome();
   setTimeout(hideHint,4500);
-  render();
 })();
 </script>
 </body>
