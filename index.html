@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0d1f18">
 <title>BURGER ZONA — Меню</title>
 
-<!-- ===== Превью для WhatsApp / Telegram / соцсетей (Open Graph) ===== -->
+<!-- ===== Превью для WhatsApp / Telegram / соцсетей ===== -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="BURGER ZONA — Меню">
 <meta property="og:description" content="Бургеры, пицца, роллы, шаурма и другое. Смотрите меню и заказывайте!">
@@ -27,8 +27,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
-    font-family:"Trebuchet MS",-apple-system,system-ui,sans-serif;
-    position:fixed;inset:0;}
+    font-family:"Trebuchet MS",-apple-system,system-ui,sans-serif;position:fixed;inset:0;}
   body{display:flex;flex-direction:column;
     background:radial-gradient(circle at 50% 25%,#163326 0%,#0d1f18 72%);}
 
@@ -38,8 +37,8 @@
   .book{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     perspective:2200px;}
   .sheet{position:absolute;inset:0;transform-style:preserve-3d;
-    transform-origin:left center;
-    transition:transform .78s cubic-bezier(.62,.02,.24,1);will-change:transform;}
+    transform-origin:left center;will-change:transform;}
+  .sheet.anim{transition:transform .7s cubic-bezier(.62,.02,.24,1);}
   .sheet .face{position:absolute;inset:0;backface-visibility:hidden;
     -webkit-backface-visibility:hidden;border-radius:8px;overflow:hidden;
     box-shadow:0 22px 55px rgba(0,0,0,.55),0 3px 10px rgba(0,0,0,.4);background:var(--bg);}
@@ -47,16 +46,44 @@
     -webkit-user-drag:none;user-select:none;}
   .sheet .front{transform:rotateY(0deg);}
   .sheet .back{transform:rotateY(180deg);}
-  .sheet .shade{position:absolute;inset:0;
-    background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,0) 55%);
-    opacity:0;transition:opacity .78s ease;pointer-events:none;border-radius:8px;}
-  .sheet.turning .shade{opacity:1;}
-  .sheet.flipped{transform:rotateY(-180deg);}
+  /* dynamic shading that deepens as the page turns (set via JS) */
+  .sheet .shade{position:absolute;inset:0;pointer-events:none;border-radius:8px;
+    background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,0) 55%);opacity:0;}
+  .sheet .gloss{position:absolute;inset:0;pointer-events:none;border-radius:8px;
+    background:linear-gradient(105deg,rgba(255,255,255,0) 40%,rgba(255,255,255,.10) 50%,rgba(255,255,255,0) 60%);
+    opacity:0;}
 
-  /* clickable contact hot-zones sit on the FRONT face of page 3 */
-  .hot{position:absolute;z-index:5;display:block;border-radius:8px;
-    background:transparent;transition:background .15s;}
-  .hot:hover,.hot:active{background:rgba(242,200,121,.18);}
+  /* ---------- smoke / steam layer ---------- */
+  .smoke{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden;border-radius:8px;}
+  .puff{position:absolute;border-radius:50%;
+    background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.20),rgba(255,255,255,.07) 45%,rgba(255,255,255,0) 70%);
+    filter:blur(6px);opacity:0;mix-blend-mode:screen;
+    animation:rise linear infinite;}
+  @keyframes rise{
+    0%{transform:translateY(20px) scale(.7);opacity:0;}
+    18%{opacity:.55;}
+    70%{opacity:.35;}
+    100%{transform:translateY(-140px) scale(1.7);opacity:0;}
+  }
+
+  /* clickable contact hot-zones */
+  .hot{position:absolute;z-index:8;display:block;border-radius:10px;
+    border:1.5px solid transparent;}
+  .hot.glow{animation:tapGlow 1.9s ease-in-out infinite;}
+  @keyframes tapGlow{
+    0%,100%{box-shadow:0 0 0 0 rgba(242,200,121,0);border-color:rgba(242,200,121,.15);background:rgba(242,200,121,.04);}
+    50%{box-shadow:0 0 14px 3px rgba(242,200,121,.45);border-color:rgba(242,200,121,.7);background:rgba(242,200,121,.12);}
+  }
+  .hot:active{background:rgba(242,200,121,.25)!important;}
+  /* little "tap" finger badge that fades in on the last page */
+  .tapcue{position:absolute;z-index:9;pointer-events:none;
+    display:flex;align-items:center;gap:6px;
+    font-size:11px;letter-spacing:.1em;color:#0d1f18;font-weight:bold;
+    background:var(--gold);padding:4px 9px;border-radius:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.4);opacity:0;transform:translateY(4px);
+    transition:opacity .4s,transform .4s;white-space:nowrap;}
+  .tapcue.show{opacity:.95;transform:translateY(0);}
+  .tapcue svg{width:13px;height:13px;fill:#0d1f18;}
 
   /* ---------- arrows ---------- */
   .nav{position:absolute;top:0;bottom:0;width:16%;max-width:130px;z-index:20;
@@ -67,8 +94,7 @@
   .nav.right{right:0;justify-content:flex-end;padding-right:16px;}
   .nav .chev{width:54px;height:54px;border-radius:50%;background:rgba(13,31,24,.55);
     backdrop-filter:blur(6px);border:1px solid var(--gold-soft);
-    display:flex;align-items:center;justify-content:center;
-    transition:transform .2s,background .2s;}
+    display:flex;align-items:center;justify-content:center;transition:transform .2s,background .2s;}
   .nav:hover .chev{background:rgba(13,31,24,.85);transform:scale(1.08);}
   .nav .chev svg{width:24px;height:24px;stroke:var(--gold);fill:none;stroke-width:2.4;
     stroke-linecap:round;stroke-linejoin:round;}
@@ -85,25 +111,20 @@
 
   /* ---------- swipe hint ---------- */
   .hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;
-    color:var(--gold);font-size:13px;letter-spacing:.14em;
-    background:rgba(13,31,24,.6);backdrop-filter:blur(6px);
-    padding:9px 18px;border-radius:30px;border:1px solid var(--gold-soft);
-    display:flex;align-items:center;gap:9px;animation:hintPulse 1.7s ease-in-out infinite;
-    transition:opacity .5s;}
-  .hint svg{width:20px;height:20px;fill:none;stroke:var(--gold);stroke-width:2;
-    stroke-linecap:round;stroke-linejoin:round;}
+    color:var(--gold);font-size:13px;letter-spacing:.14em;background:rgba(13,31,24,.6);
+    backdrop-filter:blur(6px);padding:9px 18px;border-radius:30px;border:1px solid var(--gold-soft);
+    display:flex;align-items:center;gap:9px;animation:hintPulse 1.7s ease-in-out infinite;transition:opacity .5s;}
+  .hint svg{width:20px;height:20px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
   @keyframes hintPulse{0%,100%{transform:translateX(-50%) translateX(-6px);}50%{transform:translateX(-50%) translateX(6px);}}
   .hint.hide{opacity:0;pointer-events:none;}
 
-  /* in short landscape, shrink footer so the page still fits */
   @media (max-height:520px){
     .bar{padding:6px 16px calc(6px + env(safe-area-inset-bottom));gap:5px;}
     .hint{bottom:10px;padding:7px 14px;font-size:12px;}
   }
-
   @media (prefers-reduced-motion:reduce){
-    .sheet{transition:transform .3s ease;}
-    .hint{animation:none;}
+    .sheet.anim{transition:transform .3s ease;}
+    .hint,.puff,.hot.glow{animation:none;}
   }
 </style>
 </head>
@@ -120,7 +141,7 @@
 
     <div class="hint" id="hint">
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      листайте
+      тяните, чтобы листать
       <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
   </div>
@@ -136,13 +157,11 @@
   const AR=0.7071;
   const total=IMAGES.length;
 
-  // ===== контакты (ссылки) =====
-  const WHATSAPP='https://wa.me/79280168111';        // WhatsApp номер
-  const INSTAGRAM='https://instagram.com/_burgerzona'; // Instagram профиль
-  // кликабельные зоны на 3-й странице (доли от размера страницы)
+  const WHATSAPP='https://wa.me/79280168111';
+  const INSTAGRAM='https://www.instagram.com/_burgerzona_';
   const HOTZONES=[
-    {href:WHATSAPP , x:0.00, y:0.917, w:0.33, h:0.030, label:'Написать в WhatsApp'},
-    {href:INSTAGRAM, x:0.00, y:0.955, w:0.33, h:0.030, label:'Открыть Instagram'}
+    {href:WHATSAPP , x:0.02, y:0.912, w:0.31, h:0.032, label:'Написать в WhatsApp'},
+    {href:INSTAGRAM, x:0.02, y:0.950, w:0.31, h:0.032, label:'Открыть Instagram'}
   ];
 
   let i=0, animating=false;
@@ -154,29 +173,63 @@
   const counter=document.getElementById('counter');
   const hint=document.getElementById('hint');
 
+  /* build sheets */
   const sheets=[];
   for(let idx=0;idx<total;idx++){
     const s=document.createElement('div');
-    s.className='sheet';
+    s.className='sheet anim';
     s.style.zIndex=total-idx;
     const frontSrc=IMAGES[idx];
     const backSrc=IMAGES[idx+1]||IMAGES[idx];
-    let hot='';
-    if(idx===total-1){ // last page: add contact hot-zones on its front face
-      hot=HOTZONES.map(z=>
-        '<a class="hot" href="'+z.href+'" target="_blank" rel="noopener" '+
+
+    let extras='';
+    if(idx===total-1){
+      extras=HOTZONES.map(z=>
+        '<a class="hot glow" href="'+z.href+'" target="_blank" rel="noopener" '+
         'aria-label="'+z.label+'" '+
         'style="left:'+(z.x*100)+'%;top:'+(z.y*100)+'%;width:'+(z.w*100)+'%;height:'+(z.h*100)+'%"></a>'
       ).join('');
+      extras+='<div class="tapcue" id="tapcue" style="left:34%;top:92.5%">'+
+        '<svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11m0-1.5a1.5 1.5 0 0 1 3 0V12m0-1a1.5 1.5 0 0 1 3 0v4a5 5 0 0 1-5 5h-2a5 5 0 0 1-4.3-2.4L4 15c-.5-1 .4-2 1.4-1.6L8 15V6a1.5 1.5 0 0 1 3 0"/></svg>'+
+        'нажми</div>';
     }
+    // smoke puffs — placed over the food photos of each page
+    const smoke=makeSmoke(idx);
+
     s.innerHTML=
-      '<div class="face front"><img src="'+frontSrc+'" alt="Меню, страница '+(idx+1)+'">'+hot+'</div>'+
+      '<div class="face front"><img src="'+frontSrc+'" alt="Меню, страница '+(idx+1)+'">'+smoke+extras+'</div>'+
       '<div class="face back"><img src="'+backSrc+'" alt=""></div>'+
-      '<div class="shade"></div>';
+      '<div class="shade"></div>'+
+      '<div class="gloss"></div>';
     book.appendChild(s);
     sheets.push(s);
   }
 
+  /* create a few slow rising smoke puffs at given hot-food spots per page */
+  function makeSmoke(idx){
+    // approximate positions of hot food on each page (fractions)
+    const spots={
+      0:[[0.80,0.28],[0.30,0.72]],   // burger top-right, chicken bottom-left
+      1:[[0.70,0.42],[0.30,0.80]],   // pizza, shaurma
+      2:[[0.85,0.78],[0.10,0.20]]    // salmon rolls, top-left roll
+    }[idx]||[];
+    let html='<div class="smoke">';
+    spots.forEach((sp,k)=>{
+      for(let n=0;n<3;n++){
+        const size=60+Math.random()*50;
+        const left=(sp[0]*100)+(Math.random()*8-4);
+        const top=(sp[1]*100)+(Math.random()*6-3);
+        const dur=6+Math.random()*4;
+        const delay=(k*1.5+n*1.8+Math.random()).toFixed(2);
+        html+='<div class="puff" style="left:'+left+'%;top:'+top+'%;width:'+size+'px;height:'+size+'px;'+
+              'animation-duration:'+dur+'s;animation-delay:'+delay+'s"></div>';
+      }
+    });
+    html+='</div>';
+    return html;
+  }
+
+  /* dots */
   for(let idx=0;idx<total;idx++){
     const d=document.createElement('div');
     d.className='dot'+(idx===0?' on':'');
@@ -201,36 +254,63 @@
     counter.textContent=(i+1)+' / '+total;
     prevBtn.disabled=(i===0);
     nextBtn.disabled=(i===total-1);
+    const tc=document.getElementById('tapcue');
+    if(tc){ // show the "нажми" cue only while last page is open
+      if(i===total-1){ setTimeout(()=>tc.classList.add('show'),400);
+        setTimeout(()=>tc.classList.remove('show'),4000); }
+      else tc.classList.remove('show');
+    }
+  }
+
+  /* ---- apply a partial-turn transform while dragging ---- */
+  function setDrag(sheet,deg,forward){
+    sheet.style.transform='rotateY('+deg+'deg)';
+    const shade=sheet.querySelector('.shade');
+    const gloss=sheet.querySelector('.gloss');
+    const p=Math.min(Math.abs(deg)/180,1);
+    if(shade)shade.style.opacity=(forward?p*0.9:0.9-p*0.9);
+    if(gloss)gloss.style.opacity=(0.5*Math.sin(p*Math.PI)); // shine peaks mid-turn
+  }
+  function clearFx(sheet){
+    const shade=sheet.querySelector('.shade');
+    const gloss=sheet.querySelector('.gloss');
+    if(shade)shade.style.opacity='';
+    if(gloss)gloss.style.opacity='';
+  }
+
+  function animateTo(sheet,targetDeg,cb){
+    sheet.classList.add('anim');
+    // let the CSS transition run; sync shade/gloss via style
+    requestAnimationFrame(()=>{
+      sheet.style.transform='rotateY('+targetDeg+'deg)';
+      const shade=sheet.querySelector('.shade');
+      const gloss=sheet.querySelector('.gloss');
+      if(shade)shade.style.transition='opacity .7s';
+      if(gloss)gloss.style.transition='opacity .7s';
+      if(shade)shade.style.opacity=(Math.abs(targetDeg)>=90?0.9:0);
+      if(gloss)gloss.style.opacity=0;
+    });
+    setTimeout(()=>{ if(cb)cb(); },700);
   }
 
   function next(){
     if(animating||i>=total-1)return;
     animating=true;hideHint();
     const s=sheets[i];
-    s.classList.add('turning');
     s.style.zIndex=total+2;
-    requestAnimationFrame(()=>s.classList.add('flipped'));
-    setTimeout(()=>{i++;updateChrome();animating=false;},780);
+    animateTo(s,-180,()=>{ i++;updateChrome();animating=false; });
   }
   function prev(){
     if(animating||i<=0)return;
     animating=true;hideHint();
     const s=sheets[i-1];
     s.style.zIndex=total+2;
-    s.classList.remove('flipped');
-    setTimeout(()=>{
-      s.classList.remove('turning');
-      s.style.zIndex=total-(i-1);
-      i--;updateChrome();animating=false;
-    },780);
+    animateTo(s,0,()=>{ s.style.zIndex=total-(i-1);clearFx(s);i--;updateChrome();animating=false; });
   }
   function jump(target){
     if(animating||target===i)return;
-    const step=()=>{
-      if(i<target)next();
-      else if(i>target)prev();
-      if(i!==target)setTimeout(step,120);
-    };
+    const step=()=>{ if(i<target)next();else if(i>target)prev();
+      if(i!==target)setTimeout(step,120); };
     step();
   }
 
@@ -243,26 +323,82 @@
     if(e.key==='ArrowLeft')prev();
   });
 
-  /* swipe — ignore swipes that start on a contact link */
-  let x0=null,y0=null,t0=0;
-  stage.addEventListener('touchstart',e=>{
-    if(e.target.closest('.hot')){x0=null;return;}
-    x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();
-  },{passive:true});
-  stage.addEventListener('touchend',e=>{
-    if(x0===null)return;
-    const dx=e.changedTouches[0].clientX-x0;
-    const dy=e.changedTouches[0].clientY-y0;
-    const dt=Date.now()-t0;
-    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)&&dt<700){
-      if(dx<0)next();else prev();
+  /* ============ FLEXIBLE DRAG-TO-TURN ============ */
+  let dragging=false, dragSheet=null, dragDir=0, startX=0, bookW=1;
+  stage.addEventListener('touchstart',onDown,{passive:true});
+  stage.addEventListener('touchmove',onMove,{passive:false});
+  stage.addEventListener('touchend',onUp,{passive:true});
+  stage.addEventListener('mousedown',e=>onDown(e,true));
+  window.addEventListener('mousemove',e=>{if(dragging)onMove(e,true);});
+  window.addEventListener('mouseup',onUp);
+
+  function pointX(e){return e.touches?e.touches[0].clientX:e.clientX;}
+  function pointY(e){return e.touches?e.touches[0].clientY:e.clientY;}
+
+  function onDown(e,isMouse){
+    if(animating)return;
+    if(e.target && e.target.closest && e.target.closest('.hot'))return; // let links work
+    startX=pointX(e); startY=pointY(e);
+    bookW=book.clientWidth;
+    dragDir=0; dragSheet=null; dragging=true; decided=false;
+  }
+  let startY=0, decided=false;
+  function onMove(e,isMouse){
+    if(!dragging)return;
+    const dx=pointX(e)-startX;
+    const dy=pointY(e)-startY;
+    if(!decided){
+      if(Math.abs(dx)<6&&Math.abs(dy)<6)return;
+      if(Math.abs(dy)>Math.abs(dx)){dragging=false;return;} // vertical scroll, ignore
+      decided=true;
+      // choose direction & sheet
+      if(dx<0 && i<total-1){ dragDir=1; dragSheet=sheets[i]; }
+      else if(dx>0 && i>0){ dragDir=-1; dragSheet=sheets[i-1]; }
+      else { dragging=false; return; }
+      dragSheet.classList.remove('anim');
+      dragSheet.style.zIndex=total+2;
+      hideHint();
     }
-    x0=y0=null;
-  },{passive:true});
+    if(!dragSheet)return;
+    if(e.cancelable)e.preventDefault();
+    // map horizontal drag to rotation 0..-180
+    let ratio=Math.max(0,Math.min(1,Math.abs(dx)/bookW));
+    let deg;
+    if(dragDir===1){ deg=-ratio*180; setDrag(dragSheet,deg,true); }
+    else { deg=-180+ratio*180; setDrag(dragSheet,deg,false); }
+  }
+  function onUp(e){
+    if(!dragging){decided=false;return;}
+    dragging=false;
+    if(!dragSheet){decided=false;return;}
+    const s=dragSheet; dragSheet=null; decided=false;
+    const cur=getRotY(s);
+    animating=true;
+    if(dragDir===1){
+      if(Math.abs(cur)>60){ animateTo(s,-180,()=>{i++;updateChrome();animating=false;}); }
+      else { animateTo(s,0,()=>{clearFx(s);s.style.zIndex=total-i;animating=false;}); }
+    }else{
+      if(Math.abs(cur)<120){ animateTo(s,0,()=>{clearFx(s);s.style.zIndex=total-(i-1);i--;updateChrome();animating=false;}); }
+      else { animateTo(s,-180,()=>{s.style.zIndex=total-(i-1);animating=false;}); }
+    }
+  }
+  function getRotY(el){
+    const t=getComputedStyle(el).transform;
+    if(!t||t==='none')return 0;
+    // parse matrix3d if present
+    const m=t.match(/matrix3d\(([^)]+)\)/);
+    if(m){
+      const v=m[1].split(',').map(Number);
+      // rotationY angle from matrix3d
+      const angle=Math.atan2(-v[8],v[0])*180/Math.PI;
+      return angle;
+    }
+    return 0;
+  }
 
   fit();
   updateChrome();
-  setTimeout(hideHint,4500);
+  setTimeout(hideHint,5000);
 })();
 </script>
 </body>
