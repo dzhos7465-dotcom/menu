@@ -131,25 +131,27 @@
 
 <script>
 (function(){
-  const IMAGES=['1.jpg','2.jpg','3.jpg'];
+  const IMAGES=['0.jpg','1.jpg','2.jpg','3.jpg'];  // splash, burgers, pizza, rolls
   const AR=0.7071;
   const total=IMAGES.length;
 
   const WHATSAPP='https://wa.me/79280168111';
   const INSTAGRAM='https://www.instagram.com/_burgerzona_';
+  // contacts now live on the SPLASH page (page index 0)
   const HOTZONES=[
-    {href:WHATSAPP , x:0.045, y:0.910, w:0.245, h:0.034, label:'Написать в WhatsApp'},
-    {href:INSTAGRAM, x:0.045, y:0.949, w:0.235, h:0.034, label:'Открыть Instagram'}
+    {href:WHATSAPP , x:0.335, y:0.861, w:0.27, h:0.030, label:'Написать в WhatsApp'},
+    {href:INSTAGRAM, x:0.335, y:0.893, w:0.27, h:0.030, label:'Открыть Instagram'}
   ];
+  const CONTACT_PAGE=0;
   const LIVE={
-    0:[[0.80,0.20,0.19],[0.27,0.72,0.20]],
-    1:[[0.66,0.36,0.24],[0.28,0.80,0.17]],
-    2:[[0.86,0.80,0.18]]
+    1:[[0.80,0.20,0.19],[0.27,0.72,0.20]],
+    2:[[0.66,0.36,0.24],[0.28,0.80,0.17]],
+    3:[[0.86,0.80,0.18]]
   };
   const SMOKE={
-    0:[[0.80,0.24],[0.30,0.66]],
-    1:[[0.66,0.40],[0.30,0.78]],
-    2:[[0.86,0.74]]
+    1:[[0.80,0.24],[0.30,0.66]],
+    2:[[0.66,0.40],[0.30,0.78]],
+    3:[[0.86,0.74]]
   };
 
   let i=0, animating=false, bookW=1, bookH=1;
@@ -173,7 +175,7 @@
       '<div class="face front"><img src="'+frontSrc+'" alt="Меню, страница '+(idx+1)+'">'+
         '<div class="smoke" data-page="'+idx+'"></div>'+
         '<div class="livewrap" data-page="'+idx+'"></div>'+
-        (idx===total-1?'<div class="hotwrap"></div>':'')+
+        (idx===CONTACT_PAGE?'<div class="hotwrap"></div>':'')+
       '</div>'+
       '<div class="face back"><img src="'+backSrc+'" alt=""></div>'+
       '<div class="shade"></div>';
