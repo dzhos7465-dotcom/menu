@@ -26,46 +26,46 @@
     background:radial-gradient(circle at 50% 25%,#163326 0%,#0d1f18 72%);}
 
   .stage{flex:1;position:relative;overflow:hidden;min-height:0;}
-  .book{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);perspective:2000px;}
+  .book{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);perspective:2200px;}
 
-  /* a "page" that is currently static (front-most shown flat) */
-  .flat{position:absolute;inset:0;border-radius:8px;overflow:hidden;
+  /* clean single-sheet page turn */
+  .sheet{position:absolute;inset:0;transform-style:preserve-3d;
+    transform-origin:left center;will-change:transform;}
+  .sheet.anim{transition:transform .72s cubic-bezier(.62,.02,.24,1);}
+  .sheet .face{position:absolute;inset:0;backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;border-radius:8px;overflow:hidden;
     box-shadow:0 22px 55px rgba(0,0,0,.55),0 3px 10px rgba(0,0,0,.4);background:var(--bg);}
-  .flat img{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none;user-select:none;}
-
-  /* ==== bendable turning page built from vertical strips ==== */
-  .turn{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none;
-    z-index:50;display:none;}
-  .turn.active{display:block;}
-  .strip{position:absolute;top:0;height:100%;transform-style:preserve-3d;
-    transform-origin:left center;overflow:hidden;will-change:transform;}
-  .strip .sface{position:absolute;top:0;height:100%;backface-visibility:hidden;
-    -webkit-backface-visibility:hidden;background-size:cover;background-repeat:no-repeat;}
-  .strip .sshade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
-
-  /* live food layer (breathing + gloss) sits over the flat page images */
-  .live{position:absolute;pointer-events:none;border-radius:50%;overflow:hidden;
-    mix-blend-mode:normal;}
-  .live .zoomimg{position:absolute;background-size:cover;background-repeat:no-repeat;
-    animation:breathe 5.5s ease-in-out infinite;}
-  @keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.045);}}
-  .glint{position:absolute;pointer-events:none;border-radius:50%;overflow:hidden;}
-  .glint::after{content:"";position:absolute;top:-40%;left:-60%;width:60%;height:180%;
-    background:linear-gradient(105deg,rgba(255,255,255,0),rgba(255,255,255,.18) 50%,rgba(255,255,255,0));
-    transform:rotate(8deg);animation:sweep 7s ease-in-out infinite;}
-  @keyframes sweep{0%,72%{left:-60%;}86%,100%{left:120%;}}
+  .sheet .face img{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none;user-select:none;}
+  .sheet .front{transform:rotateY(0deg);}
+  .sheet .back{transform:rotateY(180deg);}
+  .sheet .shade{position:absolute;inset:0;pointer-events:none;border-radius:8px;
+    background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,0) 55%);opacity:0;}
+  .sheet .gloss{position:absolute;inset:0;pointer-events:none;border-radius:8px;
+    background:linear-gradient(100deg,rgba(255,255,255,0) 42%,rgba(255,255,255,.12) 50%,rgba(255,255,255,0) 58%);
+    opacity:0;}
 
   /* ==== smoke / steam ==== */
   .smoke{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden;border-radius:8px;}
   .puff{position:absolute;border-radius:50%;
-    background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.42),rgba(255,255,255,.16) 45%,rgba(255,255,255,0) 72%);
+    background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.40),rgba(255,255,255,.15) 45%,rgba(255,255,255,0) 72%);
     filter:blur(7px);opacity:0;mix-blend-mode:screen;animation:rise linear infinite;}
   @keyframes rise{
     0%{transform:translateY(24px) scale(.65);opacity:0;}
-    22%{opacity:.85;}
-    65%{opacity:.5;}
-    100%{transform:translateY(-165px) scale(1.85);opacity:0;}
+    22%{opacity:.8;}
+    65%{opacity:.48;}
+    100%{transform:translateY(-160px) scale(1.8);opacity:0;}
   }
+
+  /* ==== live "breathing" food + gloss ==== */
+  .live{position:absolute;pointer-events:none;overflow:hidden;}
+  .live .zoomimg{position:absolute;background-repeat:no-repeat;
+    animation:breathe 5.5s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+  .glint{position:absolute;pointer-events:none;overflow:hidden;}
+  .glint::after{content:"";position:absolute;top:-40%;left:-60%;width:55%;height:180%;
+    background:linear-gradient(105deg,rgba(255,255,255,0),rgba(255,255,255,.16) 50%,rgba(255,255,255,0));
+    transform:rotate(8deg);animation:sweep 7.5s ease-in-out infinite;}
+  @keyframes sweep{0%,74%{left:-60%;}88%,100%{left:120%;}}
 
   /* contact hot-zones */
   .hot{position:absolute;z-index:8;display:block;border-radius:9px;border:1.5px solid transparent;}
@@ -76,8 +76,8 @@
   }
   .hot:active{background:rgba(242,200,121,.25)!important;}
   .tapcue{position:absolute;z-index:9;pointer-events:none;display:flex;align-items:center;gap:6px;
-    font-size:11px;letter-spacing:.1em;color:#0d1f18;font-weight:bold;background:var(--gold);
-    padding:4px 9px;border-radius:20px;box-shadow:0 3px 10px rgba(0,0,0,.4);
+    font-size:11px;letter-spacing:.08em;color:#0d1f18;font-weight:bold;background:var(--gold);
+    padding:4px 10px;border-radius:20px;box-shadow:0 3px 10px rgba(0,0,0,.4);
     opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s;white-space:nowrap;}
   .tapcue.show{opacity:.95;transform:translateY(0);}
   .tapcue svg{width:13px;height:13px;fill:#0d1f18;}
@@ -115,19 +115,14 @@
     .hint{bottom:10px;padding:7px 14px;font-size:12px;}
   }
   @media (prefers-reduced-motion:reduce){
+    .sheet.anim{transition:transform .3s ease;}
     .puff,.hot.glow,.zoomimg,.glint::after,.hint{animation:none;}
   }
 </style>
 </head>
 <body>
   <div class="stage" id="stage">
-    <div class="book" id="book">
-      <div class="flat" id="flat"><img id="flatImg" src="1.jpg" alt="Меню"></div>
-      <div class="smoke" id="smoke"></div>
-      <div id="liveLayer"></div>
-      <div id="hotLayer"></div>
-      <div class="turn" id="turn"></div>
-    </div>
+    <div class="book" id="book"></div>
 
     <button class="nav left" id="prev" aria-label="Назад" disabled>
       <span class="chev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
@@ -153,17 +148,13 @@
   const IMAGES=['1.jpg','2.jpg','3.jpg'];
   const AR=0.7071;
   const total=IMAGES.length;
-  const STRIPS=14;               // number of vertical strips -> smooth bend
-  const DUR=780;
 
   const WHATSAPP='https://wa.me/79280168111';
   const INSTAGRAM='https://www.instagram.com/_burgerzona_';
-  // hot-zones tightened to the text width (WhatsApp number is wider than the @handle)
   const HOTZONES=[
     {href:WHATSAPP , x:0.045, y:0.910, w:0.245, h:0.034, label:'Написать в WhatsApp'},
     {href:INSTAGRAM, x:0.045, y:0.949, w:0.235, h:0.034, label:'Открыть Instagram'}
   ];
-  // live "breathing" food regions per page (cx,cy,radius in fractions)
   const LIVE={
     0:[[0.80,0.20,0.19],[0.27,0.72,0.20]],
     1:[[0.66,0.36,0.24],[0.28,0.80,0.17]],
@@ -178,17 +169,32 @@
   let i=0, animating=false, bookW=1, bookH=1;
   const stage=document.getElementById('stage');
   const book=document.getElementById('book');
-  const flat=document.getElementById('flat');
-  const flatImg=document.getElementById('flatImg');
-  const smokeEl=document.getElementById('smoke');
-  const liveLayer=document.getElementById('liveLayer');
-  const hotLayer=document.getElementById('hotLayer');
-  const turnEl=document.getElementById('turn');
   const prevBtn=document.getElementById('prev');
   const nextBtn=document.getElementById('next');
   const dotsWrap=document.getElementById('dots');
   const counter=document.getElementById('counter');
   const hint=document.getElementById('hint');
+
+  /* build one sheet per page */
+  const sheets=[];
+  for(let idx=0;idx<total;idx++){
+    const s=document.createElement('div');
+    s.className='sheet anim';
+    s.style.zIndex=total-idx;
+    const frontSrc=IMAGES[idx];
+    const backSrc=IMAGES[idx+1]||IMAGES[idx];
+    s.innerHTML=
+      '<div class="face front"><img src="'+frontSrc+'" alt="Меню, страница '+(idx+1)+'">'+
+        '<div class="smoke" data-page="'+idx+'"></div>'+
+        '<div class="livewrap" data-page="'+idx+'"></div>'+
+        (idx===total-1?'<div class="hotwrap"></div>':'')+
+      '</div>'+
+      '<div class="face back"><img src="'+backSrc+'" alt=""></div>'+
+      '<div class="shade"></div>'+
+      '<div class="gloss"></div>';
+    book.appendChild(s);
+    sheets.push(s);
+  }
 
   /* dots */
   for(let idx=0;idx<total;idx++){
@@ -206,75 +212,70 @@
     if(w>availW){ w=availW; h=availW/AR; }
     bookW=w; bookH=h;
     book.style.width=w+'px'; book.style.height=h+'px';
-    renderDecor();
+    buildDecor();
   }
   window.addEventListener('resize',fit);
   window.addEventListener('orientationchange',()=>{setTimeout(fit,150);setTimeout(fit,400);});
 
-  /* smoke + live-food + hotzones for the CURRENT page */
-  function renderDecor(){
-    // smoke
-    let sm='';
-    (SMOKE[i]||[]).forEach((sp,k)=>{
-      for(let n=0;n<3;n++){
-        const size=64+Math.random()*46;
-        const left=(sp[0]*100)+(Math.random()*8-4);
-        const top=(sp[1]*100)+(Math.random()*6-3);
-        const dur=6+Math.random()*3.5;
-        const delay=(k*1.4+n*1.7+Math.random()).toFixed(2);
-        sm+='<div class="puff" style="left:'+left+'%;top:'+top+'%;width:'+size+'px;height:'+size+'px;'+
-            'animation-duration:'+dur+'s;animation-delay:'+delay+'s"></div>';
+  /* smoke + live food + hotzones, built once per sheet, sized to the book */
+  function buildDecor(){
+    sheets.forEach((s,idx)=>{
+      // smoke
+      const sm=s.querySelector('.smoke');
+      let smHtml='';
+      (SMOKE[idx]||[]).forEach((sp,k)=>{
+        for(let n=0;n<3;n++){
+          const size=64+Math.random()*46;
+          const left=(sp[0]*100)+(Math.random()*8-4);
+          const top=(sp[1]*100)+(Math.random()*6-3);
+          const dur=6+Math.random()*3.5;
+          const delay=(k*1.4+n*1.7+Math.random()).toFixed(2);
+          smHtml+='<div class="puff" style="left:'+left+'%;top:'+top+'%;width:'+size+'px;height:'+size+'px;'+
+                  'animation-duration:'+dur+'s;animation-delay:'+delay+'s"></div>';
+        }
+      });
+      sm.innerHTML=smHtml;
+
+      // live breathing food discs
+      const lw=s.querySelector('.livewrap');
+      let lvHtml='';
+      (LIVE[idx]||[]).forEach((r,idx2)=>{
+        const cx=r[0],cy=r[1],rad=r[2];
+        const d=rad*2*bookW;
+        const left=(cx*bookW - d/2);
+        const top=(cy*bookH - d/2);
+        const posX=-(cx*bookW - d/2);
+        const posY=-(cy*bookH - d/2);
+        const mask='-webkit-mask:radial-gradient(circle at 50% 50%,#000 55%,transparent 72%);mask:radial-gradient(circle at 50% 50%,#000 55%,transparent 72%)';
+        lvHtml+='<div class="live" style="left:'+left+'px;top:'+top+'px;width:'+d+'px;height:'+d+'px;'+mask+'">'+
+                '<div class="zoomimg" style="left:0;top:0;width:'+d+'px;height:'+d+'px;'+
+                'background-image:url('+IMAGES[idx]+');background-size:'+bookW+'px '+bookH+'px;'+
+                'background-position:'+posX+'px '+posY+'px;animation-delay:'+(idx2*1.3)+'s"></div></div>';
+        lvHtml+='<div class="glint" style="left:'+left+'px;top:'+top+'px;width:'+d+'px;height:'+d+'px;'+mask+'"></div>';
+      });
+      lw.innerHTML=lvHtml;
+
+      // hotzones on last page
+      const hw=s.querySelector('.hotwrap');
+      if(hw){
+        let hz=HOTZONES.map(z=>
+          '<a class="hot glow" href="'+z.href+'" target="_blank" rel="noopener" aria-label="'+z.label+'" '+
+          'style="left:'+(z.x*100)+'%;top:'+(z.y*100)+'%;width:'+(z.w*100)+'%;height:'+(z.h*100)+'%"></a>'
+        ).join('');
+        hz+='<div class="tapcue" style="left:'+(HOTZONES[0].x*100)+'%;top:'+((HOTZONES[1].y+HOTZONES[1].h+0.006)*100)+'%">'+
+            '<svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11m0-1.5a1.5 1.5 0 0 1 3 0V12m0-1a1.5 1.5 0 0 1 3 0v4a5 5 0 0 1-5 5h-2a5 5 0 0 1-4.3-2.4L4 15c-.5-1 .4-2 1.4-1.6L8 15V6a1.5 1.5 0 0 1 3 0"/></svg>нажми, чтобы связаться</div>';
+        hw.innerHTML=hz;
       }
     });
-    smokeEl.innerHTML=sm;
-
-    // live breathing food discs (a zoomed slice of the same page image that gently scales)
-    let lv='';
-    (LIVE[i]||[]).forEach((r,idx2)=>{
-      const cx=r[0],cy=r[1],rad=r[2];
-      const d=rad*2*bookW; // diameter px based on width
-      const left=(cx*bookW - d/2);
-      const top=(cy*bookH - d/2);
-      // background positioned so the disc shows the correct part of the page image
-      const bgW=bookW, bgH=bookH;
-      const posX=-(cx*bookW - d/2);
-      const posY=-(cy*bookH - d/2);
-      lv+='<div class="live" style="left:'+left+'px;top:'+top+'px;width:'+d+'px;height:'+d+'px;'+
-          '-webkit-mask:radial-gradient(circle at 50% 50%,#000 55%,transparent 72%);'+
-          'mask:radial-gradient(circle at 50% 50%,#000 55%,transparent 72%)">'+
-          '<div class="zoomimg" style="left:0;top:0;width:'+d+'px;height:'+d+'px;'+
-          'background-image:url('+IMAGES[i]+');background-size:'+bgW+'px '+bgH+'px;'+
-          'background-position:'+posX+'px '+posY+'px;'+
-          'animation-delay:'+(idx2*1.3)+'s"></div></div>';
-      // gloss disc
-      lv+='<div class="glint" style="left:'+left+'px;top:'+top+'px;width:'+d+'px;height:'+d+'px;'+
-          '-webkit-mask:radial-gradient(circle at 50% 50%,#000 55%,transparent 72%);'+
-          'mask:radial-gradient(circle at 50% 50%,#000 55%,transparent 72%)"></div>';
-    });
-    liveLayer.innerHTML=lv;
-
-    // hotzones (only on last page)
-    let hz='';
-    if(i===total-1){
-      hz=HOTZONES.map(z=>
-        '<a class="hot glow" href="'+z.href+'" target="_blank" rel="noopener" aria-label="'+z.label+'" '+
-        'style="left:'+(z.x*100)+'%;top:'+(z.y*100)+'%;width:'+(z.w*100)+'%;height:'+(z.h*100)+'%"></a>'
-      ).join('');
-      hz+='<div class="tapcue show" style="left:'+(HOTZONES[0].x*100)+'%;top:'+((HOTZONES[1].y+HOTZONES[1].h+0.006)*100)+'%">'+
-          '<svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11m0-1.5a1.5 1.5 0 0 1 3 0V12m0-1a1.5 1.5 0 0 1 3 0v4a5 5 0 0 1-5 5h-2a5 5 0 0 1-4.3-2.4L4 15c-.5-1 .4-2 1.4-1.6L8 15V6a1.5 1.5 0 0 1 3 0"/></svg>нажми, чтобы связаться</div>';
-    }
-    hotLayer.innerHTML=hz;
-    if(i===total-1){
-      const tc=hotLayer.querySelector('.tapcue');
-      if(tc)setTimeout(()=>tc.classList.remove('show'),4200);
-    }
+    updateCue();
   }
 
-  function showPage(idx){
-    i=idx;
-    flatImg.src=IMAGES[i];
-    renderDecor();
-    updateChrome();
+  function updateCue(){
+    const last=sheets[total-1];
+    const tc=last&&last.querySelector('.tapcue');
+    if(!tc)return;
+    if(i===total-1){ tc.classList.add('show'); setTimeout(()=>tc.classList.remove('show'),4200); }
+    else tc.classList.remove('show');
   }
 
   function updateChrome(){
@@ -282,107 +283,51 @@
     counter.textContent=(i+1)+' / '+total;
     prevBtn.disabled=(i===0);
     nextBtn.disabled=(i===total-1);
+    updateCue();
   }
 
-  /* ===== build the bendable turning page ===== */
-  function buildTurn(frontSrc,backSrc){
-    turnEl.innerHTML='';
-    const sw=bookW/STRIPS;
-    for(let s=0;s<STRIPS;s++){
-      const strip=document.createElement('div');
-      strip.className='strip';
-      strip.style.left=(s*sw)+'px';
-      strip.style.width=(sw+0.6)+'px';       // +0.6 to avoid hairline gaps
-      strip.style.zIndex=(STRIPS-s);
-      // front face shows part of frontSrc
-      const f=document.createElement('div');
-      f.className='sface';
-      f.style.width=(sw+0.6)+'px';
-      f.style.backgroundImage='url('+frontSrc+')';
-      f.style.backgroundSize=bookW+'px '+bookH+'px';
-      f.style.backgroundPosition=(-(s*sw))+'px 0px';
-      const fsh=document.createElement('div'); fsh.className='sshade';
-      f.appendChild(fsh);
-      // back face shows mirrored part of backSrc
-      const bk=document.createElement('div');
-      bk.className='sface';
-      bk.style.width=(sw+0.6)+'px';
-      bk.style.transform='rotateY(180deg)';
-      bk.style.backgroundImage='url('+backSrc+')';
-      bk.style.backgroundSize=bookW+'px '+bookH+'px';
-      // back face is the far side; show corresponding mirrored slice of next page
-      bk.style.backgroundPosition=(-(bookW-(s+1)*sw))+'px 0px';
-      const bsh=document.createElement('div'); bsh.className='sshade';
-      bk.appendChild(bsh);
-      strip.appendChild(f);
-      strip.appendChild(bk);
-      turnEl.appendChild(strip);
-    }
-    turnEl.classList.add('active');
+  /* set shade + gloss for a given progress (0 flat .. 1 turned) */
+  function fx(sheet,p){
+    const shade=sheet.querySelector('.shade');
+    const gloss=sheet.querySelector('.gloss');
+    if(shade)shade.style.opacity=(0.9*p);
+    if(gloss)gloss.style.opacity=(0.55*Math.sin(p*Math.PI)); // shine peaks mid-turn
+  }
+  function clearFx(sheet){
+    const shade=sheet.querySelector('.shade');
+    const gloss=sheet.querySelector('.gloss');
+    if(shade){shade.style.transition='';shade.style.opacity='';}
+    if(gloss){gloss.style.transition='';gloss.style.opacity='';}
   }
 
-  /* apply bend: progress 0..1 (0 = flat open, 1 = fully turned). dir 1=fwd */
-  function applyBend(progress){
-    const strips=turnEl.children;
-    const baseAngle=progress*180;
-    const bend=Math.sin(progress*Math.PI)*34; // curl strength, peaks mid-turn
-    for(let s=0;s<strips.length;s++){
-      const t=s/(strips.length-1);        // 0=spine, 1=free edge
-      const curl=bend*Math.pow(t,1.35);   // free edge curls more than the spine
-      const ang=-(baseAngle*t*0.55 + baseAngle*0.45 + curl - bend*0.5);
-      const strip=strips[s];
-      strip.style.transform='rotateY('+ang+'deg)';
-      const sh=Math.min(0.5, progress*0.5 + curl/70);
-      const f=strip.children[0].children[0];
-      const bk=strip.children[1].children[0];
-      if(f)f.style.opacity=Math.max(0,sh-0.05);
-      if(bk)bk.style.opacity=Math.max(0,0.22+progress*0.18);
-    }
-  }
-
-  function endTurn(){
-    turnEl.classList.remove('active');
-    turnEl.innerHTML='';
-  }
-
-  function animateProgress(from,to,onDone){
-    const t0=performance.now();
-    const dur=DUR*Math.max(0.25,Math.abs(to-from));
-    function frame(now){
-      let k=Math.min(1,(now-t0)/dur);
-      // ease
-      const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
-      const p=from+(to-from)*e;
-      applyBend(p);
-      if(k<1)requestAnimationFrame(frame);
-      else onDone&&onDone();
-    }
-    requestAnimationFrame(frame);
+  function animateTo(sheet,targetDeg,cb){
+    sheet.classList.add('anim');
+    const p=Math.abs(targetDeg)/180;
+    const shade=sheet.querySelector('.shade');
+    const gloss=sheet.querySelector('.gloss');
+    if(shade)shade.style.transition='opacity .72s';
+    if(gloss)gloss.style.transition='opacity .36s';
+    requestAnimationFrame(()=>{
+      sheet.style.transform='rotateY('+targetDeg+'deg)';
+      if(shade)shade.style.opacity=(0.9*p);
+      if(gloss)gloss.style.opacity=0; // gloss handled mid via CSS transition endpoints
+    });
+    setTimeout(()=>{ if(cb)cb(); },720);
   }
 
   function next(){
     if(animating||i>=total-1)return;
     animating=true;hideHint();
-    buildTurn(IMAGES[i],IMAGES[i+1]);
-    // hide the live/smoke of current page during flip for cleanliness
-    liveLayer.style.opacity=0;smokeEl.style.opacity=0;hotLayer.style.opacity=0;
-    animateProgress(0,1,()=>{
-      showPage(i+1);
-      liveLayer.style.opacity=1;smokeEl.style.opacity=1;hotLayer.style.opacity=1;
-      endTurn();animating=false;
-    });
+    const s=sheets[i];
+    s.style.zIndex=total+2;
+    animateTo(s,-180,()=>{ i++;updateChrome();animating=false; });
   }
   function prev(){
     if(animating||i<=0)return;
     animating=true;hideHint();
-    buildTurn(IMAGES[i-1],IMAGES[i]);
-    liveLayer.style.opacity=0;smokeEl.style.opacity=0;hotLayer.style.opacity=0;
-    applyBend(1);
-    animateProgress(1,0,()=>{
-      showPage(i-1);
-      liveLayer.style.opacity=1;smokeEl.style.opacity=1;hotLayer.style.opacity=1;
-      endTurn();animating=false;
-    });
+    const s=sheets[i-1];
+    s.style.zIndex=total+2;
+    animateTo(s,0,()=>{ s.style.zIndex=total-(i-1);clearFx(s);i--;updateChrome();animating=false; });
   }
   function jump(target){
     if(animating||target===i)return;
@@ -398,8 +343,8 @@
     if(e.key==='ArrowRight')next(); if(e.key==='ArrowLeft')prev();
   });
 
-  /* ===== drag to bend/turn ===== */
-  let dragging=false,decided=false,dir=0,startX=0,startY=0,curP=0;
+  /* ===== drag to turn (page follows finger, smooth) ===== */
+  let dragging=false,decided=false,dir=0,startX=0,startY=0,curDeg=0,dragSheet=null;
   stage.addEventListener('touchstart',onDown,{passive:true});
   stage.addEventListener('touchmove',onMove,{passive:false});
   stage.addEventListener('touchend',onUp,{passive:true});
@@ -412,7 +357,7 @@
   function onDown(e){
     if(animating)return;
     if(e.target&&e.target.closest&&e.target.closest('.hot'))return;
-    startX=px(e);startY=py(e);dragging=true;decided=false;dir=0;
+    startX=px(e);startY=py(e);dragging=true;decided=false;dir=0;dragSheet=null;
   }
   function onMove(e){
     if(!dragging)return;
@@ -421,35 +366,38 @@
       if(Math.abs(dx)<6&&Math.abs(dy)<6)return;
       if(Math.abs(dy)>Math.abs(dx)){dragging=false;return;}
       decided=true;
-      if(dx<0&&i<total-1){dir=1;buildTurn(IMAGES[i],IMAGES[i+1]);}
-      else if(dx>0&&i>0){dir=-1;buildTurn(IMAGES[i-1],IMAGES[i]);}
+      if(dx<0&&i<total-1){dir=1;dragSheet=sheets[i];}
+      else if(dx>0&&i>0){dir=-1;dragSheet=sheets[i-1];}
       else {dragging=false;return;}
-      liveLayer.style.opacity=0;smokeEl.style.opacity=0;hotLayer.style.opacity=0;hideHint();
+      dragSheet.classList.remove('anim');
+      dragSheet.style.zIndex=total+2;
+      hideHint();
     }
-    if(!dir)return;
+    if(!dragSheet)return;
     if(e.cancelable)e.preventDefault();
     const ratio=Math.max(0,Math.min(1,Math.abs(dx)/bookW));
-    curP=(dir===1)?ratio:(1-ratio);
-    applyBend(curP);
+    curDeg=(dir===1)? -ratio*180 : -180+ratio*180;
+    dragSheet.style.transform='rotateY('+curDeg+'deg)';
+    fx(dragSheet,Math.abs(curDeg)/180);
   }
   function onUp(){
     if(!dragging){return;}
     dragging=false;
-    if(!dir){decided=false;return;}
-    const d=dir;dir=0;animating=true;
+    if(!dragSheet){decided=false;return;}
+    const s=dragSheet;dragSheet=null;const d=dir;dir=0;decided=false;
+    const p=Math.abs(curDeg)/180;
+    animating=true;
     if(d===1){
-      if(curP>0.4)animateProgress(curP,1,()=>{showPage(i+1);restoreDecor();endTurn();animating=false;});
-      else animateProgress(curP,0,()=>{restoreDecor();endTurn();animating=false;});
+      if(p>0.4)animateTo(s,-180,()=>{i++;updateChrome();animating=false;});
+      else animateTo(s,0,()=>{clearFx(s);s.style.zIndex=total-i;animating=false;});
     }else{
-      if(curP<0.6)animateProgress(curP,0,()=>{showPage(i-1);restoreDecor();endTurn();animating=false;});
-      else animateProgress(curP,1,()=>{restoreDecor();endTurn();animating=false;});
+      if(p<0.6)animateTo(s,0,()=>{clearFx(s);s.style.zIndex=total-(i-1);i--;updateChrome();animating=false;});
+      else animateTo(s,-180,()=>{s.style.zIndex=total-(i-1);animating=false;});
     }
-    decided=false;
   }
-  function restoreDecor(){liveLayer.style.opacity=1;smokeEl.style.opacity=1;hotLayer.style.opacity=1;}
 
   fit();
-  showPage(0);
+  updateChrome();
   setTimeout(hideHint,5000);
 })();
 </script>
