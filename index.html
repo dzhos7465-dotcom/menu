@@ -5,12 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0d1f18">
 <title>BURGER ZONA — Меню</title>
+
+<!-- ===== Превью для WhatsApp / Telegram / соцсетей (Open Graph) ===== -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="BURGER ZONA — Меню">
+<meta property="og:description" content="Бургеры, пицца, роллы, шаурма и другое. Смотрите меню и заказывайте!">
+<meta property="og:image" content="preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BURGER ZONA — Меню">
+<meta name="twitter:description" content="Бургеры, пицца, роллы, шаурма и другое. Смотрите меню и заказывайте!">
+<meta name="twitter:image" content="preview.jpg">
+
 <style>
   :root{
     --bg:#0d1f18;
     --gold:#f2c879;
     --gold-soft:rgba(242,200,121,.55);
-    --ar:0.7071; /* width / height of each page */
+    --ar:0.7071;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
@@ -20,37 +33,30 @@
     background:radial-gradient(circle at 50% 25%,#163326 0%,#0d1f18 72%);}
 
   /* ---------- stage ---------- */
-  .stage{flex:1;position:relative;overflow:hidden;}
+  .stage{flex:1;position:relative;overflow:hidden;min-height:0;}
 
-  /* the book: sized by JS to fit the screen exactly */
-  .book{
-    position:absolute;left:50%;top:50%;
-    transform:translate(-50%,-50%);
-    perspective:2200px;
-  }
-  .sheet{
-    position:absolute;inset:0;
-    transform-style:preserve-3d;
+  .book{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    perspective:2200px;}
+  .sheet{position:absolute;inset:0;transform-style:preserve-3d;
     transform-origin:left center;
-    transition:transform .78s cubic-bezier(.62,.02,.24,1);
-    will-change:transform;
-  }
-  .sheet .face{
-    position:absolute;inset:0;
-    backface-visibility:hidden;-webkit-backface-visibility:hidden;
-    border-radius:8px;overflow:hidden;
-    box-shadow:0 22px 55px rgba(0,0,0,.55),0 3px 10px rgba(0,0,0,.4);
-    background:var(--bg);
-  }
+    transition:transform .78s cubic-bezier(.62,.02,.24,1);will-change:transform;}
+  .sheet .face{position:absolute;inset:0;backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;border-radius:8px;overflow:hidden;
+    box-shadow:0 22px 55px rgba(0,0,0,.55),0 3px 10px rgba(0,0,0,.4);background:var(--bg);}
   .sheet .face img{width:100%;height:100%;display:block;object-fit:cover;
     -webkit-user-drag:none;user-select:none;}
   .sheet .front{transform:rotateY(0deg);}
   .sheet .back{transform:rotateY(180deg);}
-  /* shadow overlay that darkens the turning page for depth */
-  .sheet .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,0) 55%);
+  .sheet .shade{position:absolute;inset:0;
+    background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,0) 55%);
     opacity:0;transition:opacity .78s ease;pointer-events:none;border-radius:8px;}
   .sheet.turning .shade{opacity:1;}
   .sheet.flipped{transform:rotateY(-180deg);}
+
+  /* clickable contact hot-zones sit on the FRONT face of page 3 */
+  .hot{position:absolute;z-index:5;display:block;border-radius:8px;
+    background:transparent;transition:background .15s;}
+  .hot:hover,.hot:active{background:rgba(242,200,121,.18);}
 
   /* ---------- arrows ---------- */
   .nav{position:absolute;top:0;bottom:0;width:16%;max-width:130px;z-index:20;
@@ -59,9 +65,9 @@
   .stage:hover .nav{opacity:1;}
   .nav.left{left:0;justify-content:flex-start;padding-left:16px;}
   .nav.right{right:0;justify-content:flex-end;padding-right:16px;}
-  .nav .chev{width:54px;height:54px;border-radius:50%;
-    background:rgba(13,31,24,.55);backdrop-filter:blur(6px);
-    border:1px solid var(--gold-soft);display:flex;align-items:center;justify-content:center;
+  .nav .chev{width:54px;height:54px;border-radius:50%;background:rgba(13,31,24,.55);
+    backdrop-filter:blur(6px);border:1px solid var(--gold-soft);
+    display:flex;align-items:center;justify-content:center;
     transition:transform .2s,background .2s;}
   .nav:hover .chev{background:rgba(13,31,24,.85);transform:scale(1.08);}
   .nav .chev svg{width:24px;height:24px;stroke:var(--gold);fill:none;stroke-width:2.4;
@@ -69,8 +75,8 @@
   .nav[disabled]{opacity:0!important;pointer-events:none;}
 
   /* ---------- footer ---------- */
-  .bar{flex:0 0 auto;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .bar{flex:0 0 auto;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;align-items:center;gap:7px;}
   .dots{display:flex;gap:10px;}
   .dot{width:9px;height:9px;border-radius:50%;background:var(--gold-soft);opacity:.45;
     transition:opacity .3s,transform .3s,background .3s;cursor:pointer;}
@@ -78,7 +84,7 @@
   .counter{font-size:12px;letter-spacing:.18em;color:var(--gold);opacity:.75;font-weight:bold;}
 
   /* ---------- swipe hint ---------- */
-  .hint{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:30;
+  .hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;
     color:var(--gold);font-size:13px;letter-spacing:.14em;
     background:rgba(13,31,24,.6);backdrop-filter:blur(6px);
     padding:9px 18px;border-radius:30px;border:1px solid var(--gold-soft);
@@ -88,6 +94,12 @@
     stroke-linecap:round;stroke-linejoin:round;}
   @keyframes hintPulse{0%,100%{transform:translateX(-50%) translateX(-6px);}50%{transform:translateX(-50%) translateX(6px);}}
   .hint.hide{opacity:0;pointer-events:none;}
+
+  /* in short landscape, shrink footer so the page still fits */
+  @media (max-height:520px){
+    .bar{padding:6px 16px calc(6px + env(safe-area-inset-bottom));gap:5px;}
+    .hint{bottom:10px;padding:7px 14px;font-size:12px;}
+  }
 
   @media (prefers-reduced-motion:reduce){
     .sheet{transition:transform .3s ease;}
@@ -121,10 +133,19 @@
 <script>
 (function(){
   const IMAGES=['1.jpg','2.jpg','3.jpg'];
-  const AR=0.7071;                 // page width / height
+  const AR=0.7071;
   const total=IMAGES.length;
-  let i=0, animating=false;
 
+  // ===== контакты (ссылки) =====
+  const WHATSAPP='https://wa.me/79280168111';        // WhatsApp номер
+  const INSTAGRAM='https://instagram.com/_burgerzona'; // Instagram профиль
+  // кликабельные зоны на 3-й странице (доли от размера страницы)
+  const HOTZONES=[
+    {href:WHATSAPP , x:0.00, y:0.917, w:0.33, h:0.030, label:'Написать в WhatsApp'},
+    {href:INSTAGRAM, x:0.00, y:0.955, w:0.33, h:0.030, label:'Открыть Instagram'}
+  ];
+
+  let i=0, animating=false;
   const stage=document.getElementById('stage');
   const book=document.getElementById('book');
   const prevBtn=document.getElementById('prev');
@@ -133,8 +154,6 @@
   const counter=document.getElementById('counter');
   const hint=document.getElementById('hint');
 
-  /* Build one sheet per page. Front = current image, back = next image,
-     so the flip reveals the next page on the back of the turning sheet. */
   const sheets=[];
   for(let idx=0;idx<total;idx++){
     const s=document.createElement('div');
@@ -142,15 +161,22 @@
     s.style.zIndex=total-idx;
     const frontSrc=IMAGES[idx];
     const backSrc=IMAGES[idx+1]||IMAGES[idx];
+    let hot='';
+    if(idx===total-1){ // last page: add contact hot-zones on its front face
+      hot=HOTZONES.map(z=>
+        '<a class="hot" href="'+z.href+'" target="_blank" rel="noopener" '+
+        'aria-label="'+z.label+'" '+
+        'style="left:'+(z.x*100)+'%;top:'+(z.y*100)+'%;width:'+(z.w*100)+'%;height:'+(z.h*100)+'%"></a>'
+      ).join('');
+    }
     s.innerHTML=
-      '<div class="face front"><img src="'+frontSrc+'" alt="Меню, страница '+(idx+1)+'"></div>'+
+      '<div class="face front"><img src="'+frontSrc+'" alt="Меню, страница '+(idx+1)+'">'+hot+'</div>'+
       '<div class="face back"><img src="'+backSrc+'" alt=""></div>'+
       '<div class="shade"></div>';
     book.appendChild(s);
     sheets.push(s);
   }
 
-  /* dots */
   for(let idx=0;idx<total;idx++){
     const d=document.createElement('div');
     d.className='dot'+(idx===0?' on':'');
@@ -159,17 +185,16 @@
   }
   const dots=[...dotsWrap.children];
 
-  /* ---- size the book to fit the screen exactly ---- */
   function fit(){
     const availW=stage.clientWidth*0.94;
     const availH=stage.clientHeight*0.94;
-    let w=availH*AR, h=availH;      // try fitting by height first
-    if(w>availW){ w=availW; h=availW/AR; }  // too wide -> fit by width
+    let w=availH*AR, h=availH;
+    if(w>availW){ w=availW; h=availW/AR; }
     book.style.width=w+'px';
     book.style.height=h+'px';
   }
   window.addEventListener('resize',fit);
-  window.addEventListener('orientationchange',()=>setTimeout(fit,200));
+  window.addEventListener('orientationchange',()=>{setTimeout(fit,150);setTimeout(fit,400);});
 
   function updateChrome(){
     dots.forEach((d,idx)=>d.classList.toggle('on',idx===i));
@@ -183,10 +208,9 @@
     animating=true;hideHint();
     const s=sheets[i];
     s.classList.add('turning');
-    // lift turning sheet above the rest during the flip
     s.style.zIndex=total+2;
     requestAnimationFrame(()=>s.classList.add('flipped'));
-    setTimeout(()=>{ i++; updateChrome(); animating=false; },780);
+    setTimeout(()=>{i++;updateChrome();animating=false;},780);
   }
   function prev(){
     if(animating||i<=0)return;
@@ -197,16 +221,15 @@
     setTimeout(()=>{
       s.classList.remove('turning');
       s.style.zIndex=total-(i-1);
-      i--; updateChrome(); animating=false;
+      i--;updateChrome();animating=false;
     },780);
   }
   function jump(target){
     if(animating||target===i)return;
-    // set all sheets to the correct flipped state instantly-ish (step through)
     const step=()=>{
-      if(i<target){ next(); }
-      else if(i>target){ prev(); }
-      if(i!==target) setTimeout(step,120);
+      if(i<target)next();
+      else if(i>target)prev();
+      if(i!==target)setTimeout(step,120);
     };
     step();
   }
@@ -220,9 +243,10 @@
     if(e.key==='ArrowLeft')prev();
   });
 
-  /* swipe */
+  /* swipe — ignore swipes that start on a contact link */
   let x0=null,y0=null,t0=0;
   stage.addEventListener('touchstart',e=>{
+    if(e.target.closest('.hot')){x0=null;return;}
     x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();
   },{passive:true});
   stage.addEventListener('touchend',e=>{
