@@ -9,13 +9,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="BURGER ZONA — Меню">
 <meta property="og:description" content="Бургеры, пицца, роллы, шаурма и другое. Смотрите меню и заказывайте!">
-<meta property="og:image" content="preview.jpg">
+<meta property="og:url" content="https://dzhos7465-dotcom.github.io/menu/">
+<meta property="og:image" content="https://dzhos7465-dotcom.github.io/menu/preview.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BURGER ZONA — Меню">
 <meta name="twitter:description" content="Бургеры, пицца, роллы, шаурма и другое. Смотрите меню и заказывайте!">
-<meta name="twitter:image" content="preview.jpg">
+<meta name="twitter:image" content="https://dzhos7465-dotcom.github.io/menu/preview.jpg">
 
 <style>
   :root{ --bg:#0d1f18; --gold:#f2c879; --gold-soft:rgba(242,200,121,.55); --ar:0.7071; }
@@ -37,7 +38,8 @@
     box-shadow:0 22px 55px rgba(0,0,0,.55),0 3px 10px rgba(0,0,0,.4);background:var(--bg);}
   .sheet .face img{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none;user-select:none;}
   .sheet .front{transform:rotateY(0deg);}
-  .sheet .back{transform:rotateY(180deg);}
+  .sheet .back{transform:rotateY(180deg);
+    background:linear-gradient(120deg,#12291f 0%,#0d1f18 55%,#0a1813 100%);}
   .sheet .shade{position:absolute;inset:0;pointer-events:none;border-radius:8px;
     background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,0) 55%);opacity:0;}
 
@@ -170,14 +172,13 @@
     s.className='sheet anim';
     s.style.zIndex=total-idx;
     const frontSrc=IMAGES[idx];
-    const backSrc=IMAGES[idx+1]||IMAGES[idx];
     s.innerHTML=
       '<div class="face front"><img src="'+frontSrc+'" alt="Меню, страница '+(idx+1)+'">'+
         '<div class="smoke" data-page="'+idx+'"></div>'+
         '<div class="livewrap" data-page="'+idx+'"></div>'+
         (idx===CONTACT_PAGE?'<div class="hotwrap"></div>':'')+
       '</div>'+
-      '<div class="face back"><img src="'+backSrc+'" alt=""></div>'+
+      '<div class="face back"></div>'+
       '<div class="shade"></div>';
     book.appendChild(s);
     sheets.push(s);
@@ -284,12 +285,13 @@
     animating=true;hideHint();
     const s=sheets[i];
     s.style.zIndex=total+2;
-    animateTo(s,-180,()=>{ i++;updateChrome();animating=false; });
+    animateTo(s,-180,()=>{ i++;park(s);updateChrome();animating=false; });
   }
   function prev(){
     if(animating||i<=0)return;
     animating=true;hideHint();
     const s=sheets[i-1];
+    unpark(s);
     s.style.zIndex=total+2;
     animateTo(s,0,()=>{ s.style.zIndex=total-(i-1);clearFx(s);i--;updateChrome();animating=false; });
   }
@@ -300,6 +302,12 @@
     step();
   }
   function hideHint(){hint.classList.add('hide');}
+
+  /* a fully turned sheet is parked out of sight, so no page shows twice */
+  function park(s){ s.style.transition='opacity .28s'; s.style.opacity='0';
+    s._parkT=setTimeout(()=>{ s.style.visibility='hidden'; },280); }
+  function unpark(s){ clearTimeout(s._parkT); s.style.transition='';
+    s.style.opacity=''; s.style.visibility='visible'; }
 
   prevBtn.addEventListener('click',prev);
   nextBtn.addEventListener('click',next);
@@ -331,7 +339,7 @@
       if(Math.abs(dy)>Math.abs(dx)){dragging=false;return;}
       decided=true;
       if(dx<0&&i<total-1){dir=1;dragSheet=sheets[i];}
-      else if(dx>0&&i>0){dir=-1;dragSheet=sheets[i-1];}
+      else if(dx>0&&i>0){dir=-1;dragSheet=sheets[i-1];unpark(dragSheet);}
       else {dragging=false;return;}
       dragSheet.classList.remove('anim');
       dragSheet.style.zIndex=total+2;
@@ -353,11 +361,11 @@
     const p=Math.abs(curDeg)/180;
     animating=true;
     if(d===1){
-      if(p>0.4)animateTo(s,-180,()=>{i++;updateChrome();animating=false;});
+      if(p>0.4)animateTo(s,-180,()=>{i++;park(s);updateChrome();animating=false;});
       else animateTo(s,0,()=>{clearFx(s);s.style.zIndex=total-i;animating=false;});
     }else{
       if(p<0.6)animateTo(s,0,()=>{clearFx(s);s.style.zIndex=total-(i-1);i--;updateChrome();animating=false;});
-      else animateTo(s,-180,()=>{s.style.zIndex=total-(i-1);animating=false;});
+      else animateTo(s,-180,()=>{s.style.zIndex=total-(i-1);park(s);animating=false;});
     }
   }
 
